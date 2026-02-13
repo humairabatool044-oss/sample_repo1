@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            color: #333;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-tab {
+            padding: 0.75rem 1.5rem;
+            background: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .nav-tab:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .nav-tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: transform 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .stat-card h3 {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-card .number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+        }
+
+        .card h2 {
+            margin-bottom: 1.5rem;
+            color: #333;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 0.5rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 0.75rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 500;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        tr:hover {
+            background: #f9fafb;
+        }
+
+        .status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .status-confirmed {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-cancelled {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-small {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.85rem;
+        }
+
+        .search-box {
+            margin-bottom: 1rem;
+        }
+
+        .search-box input {
+            width: 100%;
+            max-width: 400px;
+            padding: 0.75rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .modal-header h3 {
+            color: #333;
+        }
+
+        .close-btn {
+            float: right;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🏥 Hospital Management System</h1>
+        <p>Comprehensive healthcare administration platform</p>
+    </div>
+
+    <div class="container">
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="switchTab('dashboard')">Dashboard</button>
+            <button class="nav-tab" onclick="switchTab('patients')">Patients</button>
+            <button class="nav-tab" onclick="switchTab('appointments')">Appointments</button>
+            <button class="nav-tab" onclick="switchTab('doctors')">Doctors</button>
+            <button class="nav-tab" onclick="switchTab('departments')">Departments</button>
+        </div>
+
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content active">
+            <div class="dashboard">
+                <div class="stat-card">
+                    <h3>Total Patients</h3>
+                    <div class="number" id="totalPatients">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Today's Appointments</h3>
+                    <div class="number" id="todayAppointments">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Doctors</h3>
+                    <div class="number" id="totalDoctors">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Departments</h3>
+                    <div class="number" id="totalDepartments">0</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Recent Appointments</h2>
+                <div class="table-container">
+                    <table id="recentAppointmentsTable">
+                        <thead>
+                            <tr>
+                                <th>Patient</th>
+                                <th>Doctor</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentAppointmentsBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Patients Tab -->
+        <div id="patients" class="tab-content">
+            <div class="card">
+                <h2>Patient Registration</h2>
+                <form id="patientForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>First Name *</label>
+                            <input type="text" id="patientFirstName" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Last Name *</label>
+                            <input type="text" id="patientLastName" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Date of Birth *</label>
+                            <input type="date" id="patientDOB" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Gender *</label>
+                            <select id="patientGender" required>
+                                <option value="">Select Gender</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Phone *</label>
+                            <input type="tel" id="patientPhone" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" id="patientEmail">
+                        </div>
+                        <div class="form-group">
+                            <label>Blood Group</label>
+                            <select id="patientBloodGroup">
+                                <option value="">Select Blood Group</option>
+                                <option value="A+">A+</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B-">B-</option>
+                                <option value="AB+">AB+</option>
+                                <option value="AB-">AB-</option>
+                                <option value="O+">O+</option>
+                                <option value="O-">O-</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Emergency Contact</label>
+                            <input type="tel" id="patientEmergencyContact">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Address</label>
+                        <textarea id="patientAddress" rows="3"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Register Patient</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h2>Patient List</h2>
+                <div class="search-box">
+                    <input type="text" id="patientSearch" placeholder="Search patients...">
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Age</th>
+                                <th>Gender</th>
+                                <th>Phone</th>
+                                <th>Blood Group</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="patientsTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Appointments Tab -->
+        <div id="appointments" class="tab-content">
+            <div class="card">
+                <h2>Schedule Appointment</h2>
+                <form id="appointmentForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Patient *</label>
+                            <select id="appointmentPatient" required>
+                                <option value="">Select Patient</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Doctor *</label>
+                            <select id="appointmentDoctor" required>
+                                <option value="">Select Doctor</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Date *</label>
+                            <input type="date" id="appointmentDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Time *</label>
+                            <input type="time" id="appointmentTime" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Status *</label>
+                            <select id="appointmentStatus" required>
+                                <option value="Pending">Pending</option>
+                                <option value="Confirmed">Confirmed</option>
+                                <option value="Cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Notes</label>
+                        <textarea id="appointmentNotes" rows="3"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Schedule Appointment</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h2>Appointments List</h2>
+                <div class="search-box">
+                    <input type="text" id="appointmentSearch" placeholder="Search appointments...">
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Patient</th>
+                                <th>Doctor</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="appointmentsTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Doctors Tab -->
+        <div id="doctors" class="tab-content">
+            <div class="card">
+                <h2>Add Doctor</h2>
+                <form id="doctorForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>First Name *</label>
+                            <input type="text" id="doctorFirstName" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Last Name *</label>
+                            <input type="text" id="doctorLastName" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Specialization *</label>
+                            <input type="text" id="doctorSpecialization" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Department *</label>
+                            <select id="doctorDepartment" required>
+                                <option value="">Select Department</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Phone *</label>
+                            <input type="tel" id="doctorPhone" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email *</label>
+                            <input type="email" id="doctorEmail" required>
+                        </div>
+                        <div class="form-group">
+                            <label>License Number *</label>
+                            <input type="text" id="doctorLicense" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Years of Experience</label>
+                            <input type="number" id="doctorExperience" min="0">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Doctor</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h2>Doctors List</h2>
+                <div class="search-box">
+                    <input type="text" id="doctorSearch" placeholder="Search doctors...">
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Specialization</th>
+                                <th>Department</th>
+                                <th>Phone</th>
+                                <th>Email</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="doctorsTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Departments Tab -->
+        <div id="departments" class="tab-content">
+            <div class="card">
+                <h2>Add Department</h2>
+                <form id="departmentForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Department Name *</label>
+                            <input type="text" id="departmentName" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Head of Department</label>
+                            <input type="text" id="departmentHead">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="departmentDescription" rows="3"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Department</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h2>Departments List</h2>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Head</th>
+                                <th>Description</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="departmentsTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data Storage
+        let patients = JSON.parse(localStorage.getItem('patients')) || [];
+        let doctors = JSON.parse(localStorage.getItem('doctors')) || [];
+        let appointments = JSON.parse(localStorage.getItem('appointments')) || [];
+        let departments = JSON.parse(localStorage.getItem('departments')) || [];
+
+        // Initialize with sample data if empty
+        if (departments.length === 0) {
+            departments = [
+                { id: 1, name: 'Cardiology', head: 'Dr. Smith', description: 'Heart and cardiovascular care' },
+                { id: 2, name: 'Neurology', head: 'Dr. Johnson', description: 'Brain and nervous system care' },
+                { id: 3, name: 'Pediatrics', head: 'Dr. Williams', description: 'Child healthcare' },
+                { id: 4, name: 'Orthopedics', head: 'Dr. Brown', description: 'Bone and joint care' },
+                { id: 5, name: 'Emergency', head: 'Dr. Davis', description: '24/7 emergency services' }
+            ];
+            saveDepartments();
+        }
+
+        // Tab Switching
+        function switchTab(tabName) {
+            const tabs = document.querySelectorAll('.tab-content');
+            const navTabs = document.querySelectorAll('.nav-tab');
+            
+            tabs.forEach(tab => tab.classList.remove('active'));
+            navTabs.forEach(nav => nav.classList.remove('active'));
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+            
+            if (tabName === 'dashboard') {
+                updateDashboard();
+            }
+        }
+
+        // Update Dashboard
+        function updateDashboard() {
+            document.getElementById('totalPatients').textContent = patients.length;
+            document.getElementById('totalDoctors').textContent = doctors.length;
+            document.getElementById('totalDepartments').textContent = departments.length;
+            
+            const today = new Date().toISOString().split('T')[0];
+            const todayAppts = appointments.filter(apt => apt.date === today);
+            document.getElementById('todayAppointments').textContent = todayAppts.length;
+            
+            renderRecentAppointments();
+        }
+
+        function renderRecentAppointments() {
+            const tbody = document.getElementById('recentAppointmentsBody');
+            const recent = appointments.slice(-5).reverse();
+            
+            tbody.innerHTML = recent.map(apt => {
+                const patient = patients.find(p => p.id === apt.patientId);
+                const doctor = doctors.find(d => d.id === apt.doctorId);
+                const statusClass = `status-${apt.status.toLowerCase()}`;
+                
+                return `
+                    <tr>
+                        <td>${patient ? patient.firstName + ' ' + patient.lastName : 'N/A'}</td>
+                        <td>${doctor ? 'Dr. ' + doctor.firstName + ' ' + doctor.lastName : 'N/A'}</td>
+                        <td>${apt.date}</td>
+                        <td>${apt.time}</td>
+                        <td><span class="status ${statusClass}">${apt.status}</span></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Patient Management
+        document.getElementById('patientForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const patient = {
+                id: patients.length + 1,
+                firstName: document.getElementById('patientFirstName').value,
+                lastName: document.getElementById('patientLastName').value,
+                dob: document.getElementById('patientDOB').value,
+                gender: document.getElementById('patientGender').value,
+                phone: document.getElementById('patientPhone').value,
+                email: document.getElementById('patientEmail').value,
+                bloodGroup: document.getElementById('patientBloodGroup').value,
+                emergencyContact: document.getElementById('patientEmergencyContact').value,
+                address: document.getElementById('patientAddress').value,
+                registrationDate: new Date().toISOString().split('T')[0]
+            };
+            
+            patients.push(patient);
+            savePatients();
+            renderPatients();
+            updatePatientDropdowns();
+            e.target.reset();
+            alert('Patient registered successfully!');
+        });
+
+        function renderPatients() {
+            const tbody = document.getElementById('patientsTableBody');
+            const searchTerm = document.getElementById('patientSearch').value.toLowerCase();
+            
+            const filtered = patients.filter(p => 
+                p.firstName.toLowerCase().includes(searchTerm) ||
+                p.lastName.toLowerCase().includes(searchTerm) ||
+                p.phone.includes(searchTerm)
+            );
+            
+            tbody.innerHTML = filtered.map(patient => {
+                const age = calculateAge(patient.dob);
+                return `
+                    <tr>
+                        <td>${patient.id}</td>
+                        <td>${patient.firstName} ${patient.lastName}</td>
+                        <td>${age}</td>
+                        <td>${patient.gender}</td>
+                        <td>${patient.phone}</td>
+                        <td>${patient.bloodGroup || 'N/A'}</td>
+                        <td class="action-btns">
+                            <button class="btn btn-small btn-danger" onclick="deletePatient(${patient.id})">Delete</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function deletePatient(id) {
+            if (confirm('Are you sure you want to delete this patient?')) {
+                patients = patients.filter(p => p.id !== id);
+                savePatients();
+                renderPatients();
+                updatePatientDropdowns();
+            }
+        }
+
+        document.getElementById('patientSearch').addEventListener('input', renderPatients);
+
+        // Doctor Management
+        document.getElementById('doctorForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const doctor = {
+                id: doctors.length + 1,
+                firstName: document.getElementById('doctorFirstName').value,
+                lastName: document.getElementById('doctorLastName').value,
+                specialization: document.getElementById('doctorSpecialization').value,
+                department: document.getElementById('doctorDepartment').value,
+                phone: document.getElementById('doctorPhone').value,
+                email: document.getElementById('doctorEmail').value,
+                license: document.getElementById('doctorLicense').value,
+                experience: document.getElementById('doctorExperience').value
+            };
+            
+            doctors.push(doctor);
+            saveDoctors();
+            renderDoctors();
+            updateDoctorDropdowns();
+            e.target.reset();
+            alert('Doctor added successfully!');
+        });
+
+        function renderDoctors() {
+            const tbody = document.getElementById('doctorsTableBody');
+            const searchTerm = document.getElementById('doctorSearch').value.toLowerCase();
+            
+            const filtered = doctors.filter(d => 
+                d.firstName.toLowerCase().includes(searchTerm) ||
+                d.lastName.toLowerCase().includes(searchTerm) ||
+                d.specialization.toLowerCase().includes(searchTerm)
+            );
+            
+            tbody.innerHTML = filtered.map(doctor => `
+                <tr>
+                    <td>${doctor.id}</td>
+                    <td>Dr. ${doctor.firstName} ${doctor.lastName}</td>
+                    <td>${doctor.specialization}</td>
+                    <td>${doctor.department}</td>
+                    <td>${doctor.phone}</td>
+                    <td>${doctor.email}</td>
+                    <td class="action-btns">
+                        <button class="btn btn-small btn-danger" onclick="deleteDoctor(${doctor.id})">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function deleteDoctor(id) {
+            if (confirm('Are you sure you want to delete this doctor?')) {
+                doctors = doctors.filter(d => d.id !== id);
+                saveDoctors();
+                renderDoctors();
+                updateDoctorDropdowns();
+            }
+        }
+
+        document.getElementById('doctorSearch').addEventListener('input', renderDoctors);
+
+        // Appointment Management
+        document.getElementById('appointmentForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const appointment = {
+                id: appointments.length + 1,
+                patientId: parseInt(document.getElementById('appointmentPatient').value),
+                doctorId: parseInt(document.getElementById('appointmentDoctor').value),
+                date: document.getElementById('appointmentDate').value,
+                time: document.getElementById('appointmentTime').value,
+                status: document.getElementById('appointmentStatus').value,
+                notes: document.getElementById('appointmentNotes').value
+            };
+            
+            appointments.push(appointment);
+            saveAppointments();
+            renderAppointments();
+            e.target.reset();
+            alert('Appointment scheduled successfully!');
+        });
+
+        function renderAppointments() {
+            const tbody = document.getElementById('appointmentsTableBody');
+            const searchTerm = document.getElementById('appointmentSearch').value.toLowerCase();
+            
+            const filtered = appointments.filter(apt => {
+                const patient = patients.find(p => p.id === apt.patientId);
+                const doctor = doctors.find(d => d.id === apt.doctorId);
+                return (patient && (patient.firstName.toLowerCase().includes(searchTerm) || 
+                        patient.lastName.toLowerCase().includes(searchTerm))) ||
+                       (doctor && (doctor.firstName.toLowerCase().includes(searchTerm) || 
+                        doctor.lastName.toLowerCase().includes(searchTerm)));
+            });
+            
+            tbody.innerHTML = filtered.map(apt => {
+                const patient = patients.find(p => p.id === apt.patientId);
+                const doctor = doctors.find(d => d.id === apt.doctorId);
+                const statusClass = `status-${apt.status.toLowerCase()}`;
+                
+                return `
+                    <tr>
+                        <td>${apt.id}</td>
+                        <td>${patient ? patient.firstName + ' ' + patient.lastName : 'N/A'}</td>
+                        <td>${doctor ? 'Dr. ' + doctor.firstName + ' ' + doctor.lastName : 'N/A'}</td>
+                        <td>${apt.date}</td>
+                        <td>${apt.time}</td>
+                        <td><span class="status ${statusClass}">${apt.status}</span></td>
+                        <td class="action-btns">
+                            <button class="btn btn-small btn-success" onclick="updateAppointmentStatus(${apt.id}, 'Confirmed')">Confirm</button>
+                            <button class="btn btn-small btn-danger" onclick="deleteAppointment(${apt.id})">Delete</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function updateAppointmentStatus(id, status) {
+            const apt = appointments.find(a => a.id === id);
+            if (apt) {
+                apt.status = status;
+                saveAppointments();
+                renderAppointments();
+            }
+        }
+
+        function deleteAppointment(id) {
+            if (confirm('Are you sure you want to delete this appointment?')) {
+                appointments = appointments.filter(a => a.id !== id);
+                saveAppointments();
+                renderAppointments();
+            }
+        }
+
+        document.getElementById('appointmentSearch').addEventListener('input', renderAppointments);
+
+        // Department Management
+        document.getElementById('departmentForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const department = {
+                id: departments.length + 1,
+                name: document.getElementById('departmentName').value,
+                head: document.getElementById('departmentHead').value,
+                description: document.getElementById('departmentDescription').value
+            };
+            
+            departments.push(department);
+            saveDepartments();
+            renderDepartments();
+            updateDepartmentDropdowns();
+            e.target.reset();
+            alert('Department added successfully!');
+        });
+
+        function renderDepartments() {
+            const tbody = document.getElementById('departmentsTableBody');
+            
+            tbody.innerHTML = departments.map(dept => `
+                <tr>
+                    <td>${dept.id}</td>
+                    <td>${dept.name}</td>
+                    <td>${dept.head || 'N/A'}</td>
+                    <td>${dept.description || 'N/A'}</td>
+                    <td class="action-btns">
+                        <button class="btn btn-small btn-danger" onclick="deleteDepartment(${dept.id})">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function deleteDepartment(id) {
+            if (confirm('Are you sure you want to delete this department?')) {
+                departments = departments.filter(d => d.id !== id);
+                saveDepartments();
+                renderDepartments();
+                updateDepartmentDropdowns();
+            }
+        }
+
+        // Utility Functions
+        function calculateAge(dob) {
+            const birthDate = new Date(dob);
+            const today = new Date();
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const monthDiff = today.getMonth() - birthDate.getMonth();
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            return age;
+        }
+
+        function updatePatientDropdowns() {
+            const select = document.getElementById('appointmentPatient');
+            select.innerHTML = '<option value="">Select Patient</option>' +
+                patients.map(p => `<option value="${p.id}">${p.firstName} ${p.lastName}</option>`).join('');
+        }
+
+        function updateDoctorDropdowns() {
+            const select = document.getElementById('appointmentDoctor');
+            select.innerHTML = '<option value="">Select Doctor</option>' +
+                doctors.map(d => `<option value="${d.id}">Dr. ${d.firstName} ${d.lastName} - ${d.specialization}</option>`).join('');
+        }
+
+        function updateDepartmentDropdowns() {
+            const select = document.getElementById('doctorDepartment');
+            select.innerHTML = '<option value="">Select Department</option>' +
+                departments.map(d => `<option value="${d.name}">${d.name}</option>`).join('');
+        }
+
+        // LocalStorage Functions
+        function savePatients() {
+            localStorage.setItem('patients', JSON.stringify(patients));
+        }
+
+        function saveDoctors() {
+            localStorage.setItem('doctors', JSON.stringify(doctors));
+        }
+
+        function saveAppointments() {
+            localStorage.setItem('appointments', JSON.stringify(appointments));
+        }
+
+        function saveDepartments() {
+            localStorage.setItem('departments', JSON.stringify(departments));
+        }
+
+        // Initialize
+        renderPatients();
+        renderDoctors();
+        renderAppointments();
+        renderDepartments();
+        updatePatientDropdowns();
+        updateDoctorDropdowns();
+        updateDepartmentDropdowns();
+        updateDashboard();
+    </script>
+</body>
+</html>
